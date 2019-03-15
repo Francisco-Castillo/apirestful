@@ -5,6 +5,7 @@
  */
 package com.fcastillo.paisesapi;
 
+import com.fcastillo.paisesapi.criterios.ComparatorPoblacion;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
@@ -40,8 +41,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Pais.findByPaisAbreviatura", query = "SELECT p FROM Pais p WHERE p.paisAbreviatura = :paisAbreviatura"),
     @NamedQuery(name = "Pais.findByPaisCapital", query = "SELECT p FROM Pais p WHERE p.paisCapital = :paisCapital"),
     @NamedQuery(name = "Pais.findByPaisPoblacion", query = "SELECT p FROM Pais p WHERE p.paisPoblacion = :paisPoblacion"),
-    @NamedQuery(name = "Pais.findByBandera", query = "SELECT p FROM Pais p WHERE p.bandera = :bandera")})
-public class Pais implements Serializable {
+    @NamedQuery(name = "Pais.findByBandera", query = "SELECT p FROM Pais p WHERE p.bandera = :bandera"),
+    @NamedQuery(name = "Pais.findByResenia", query = "SELECT p FROM Pais p WHERE p.resenia = :resenia")})
+public class Pais extends ComparatorPoblacion implements Serializable{
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -70,6 +72,9 @@ public class Pais implements Serializable {
     @Size(max = 40)
     @Column(name = "bandera")
     private String bandera;
+    @Size(max = 400)
+    @Column(name = "resenia")
+    private String resenia;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "paisId")
     private Collection<Provincia> provinciaCollection;
     @JoinColumn(name = "continente_id", referencedColumnName = "continente_id")
@@ -145,6 +150,14 @@ public class Pais implements Serializable {
         this.bandera = bandera;
     }
 
+    public String getResenia() {
+        return resenia;
+    }
+
+    public void setResenia(String resenia) {
+        this.resenia = resenia;
+    }
+
     @XmlTransient
     public Collection<Provincia> getProvinciaCollection() {
         return provinciaCollection;
@@ -186,5 +199,7 @@ public class Pais implements Serializable {
     public String toString() {
         return "com.fcastillo.paisesapi.Pais[ paisId=" + paisId + " ]";
     }
+
+  
     
 }

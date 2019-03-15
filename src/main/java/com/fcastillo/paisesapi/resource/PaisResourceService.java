@@ -37,6 +37,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import com.fcastillo.paisesapi.interfaces.Operaciones;
+import java.util.stream.*;
 
 @Path("/Pais")
 @Api(value = "/Pais")
@@ -46,11 +47,13 @@ public class PaisResourceService implements Operaciones {
     private static final int NOMBRE_OFICIAL = 1;
     private static final int NOMBRE_CORTO = 2;
     private static final int CANTIDAD_DE_HABITANTES = 3;
-    
-    private static final int ORDEN_ASCENDENTE=4;
-    private static final int ORDEN_DESCENTE=5;
+
+    private static final int ORDEN_ASCENDENTE = 4;
+    private static final int ORDEN_DESCENTE = 5;
     private Pais pais;
+
     private List<Pais> lstPaises = new ArrayList<>();
+
     @EJB
     PaisFacadeLocal paisEJB;
     JsonObject paisJson;
@@ -80,6 +83,7 @@ public class PaisResourceService implements Operaciones {
     @Override
     @DELETE
     @Path("/Remove/{id}")
+    @ApiOperation(value = "Permite eliminar un pais")
     public Response eliminar(@ApiParam(value = "Codigo de pais") @PathParam("id") int p) {
 
         pais = paisEJB.find(p);
@@ -102,69 +106,54 @@ public class PaisResourceService implements Operaciones {
     @Path("/GetLista")
     @ApiOperation(value = "Retorna una lista de paises")
     public Response obtenerTodos(
-            @ApiParam(value = "offset") @QueryParam("offset") @DefaultValue("0") Integer offset,
-            @ApiParam(value = "limit") @QueryParam("limit") @DefaultValue("10") Integer limit,
-            @ApiParam(value = "search") @QueryParam("search") String search,
+            @ApiParam(value = "Id Continente") @QueryParam("idContinente") int idContinente,
             @ApiParam(value = "sort") @QueryParam("sort") int sort,
-            @ApiParam(value = "order") @QueryParam("order") int order
+            @ApiParam(value = "search") @QueryParam("search") String search,
+            @ApiParam(value = "order") @QueryParam("order") int order,
+            @ApiParam(value = "offset") @QueryParam("offset") Integer offset,
+            @ApiParam(value = "limit") @QueryParam("limit") Integer limit
     ) {
-        //  Obtenemos la cantidad total de paises
-        int total = 0;
-        lstPaises = paisEJB.findAll();
-        total = lstPaises.size();
-
-        lstPaises = paisEJB.findByParameters(offset, limit);
-
-        if (search != null && search.length() > 0) {
-            lstPaises = paisEJB.findByNameLike(search);
-            total = lstPaises.size();
+        List<Pais> nuevaLista;
+        Long totalPaises = paisEJB.cantidadTotalDePaises();
+        if (idContinente != 0) {
+            lstPaises = paisEJB.findByContinente(idContinente);
+        } else {
+            lstPaises = paisEJB.findByParameters(offset, limit);
         }
-        //  Ordenamos
-        switch (sort) {
-            case NOMBRE_OFICIAL:
-                Collections.sort(lstPaises, new ComparatorNombrePais());
-                break;
-            case NOMBRE_CORTO:
-                Collections.sort(lstPaises, new ComparatorNombrePais());
-                break;
-            case CANTIDAD_DE_HABITANTES:
-                Collections.sort(lstPaises, new ComparatorPoblacion ());
-                break;
-            default:
+        
+        if (search != null) {
+            nuevaLista = lstPaises.stream().filter(x -> x.getPaisNombreCorto().toLowerCase().contains(search.toLowerCase())).collect(Collectors.toList());
+        } else {
+            nuevaLista = lstPaises;
         }
-        switch(order){
-            case ORDEN_ASCENDENTE:
-                break;
-            case ORDEN_DESCENTE:
-                Collections.sort(lstPaises, Collections.reverseOrder(new ComparatorPoblacion()));
-        }
-
+        
         JsonArrayBuilder arregloPaises = Json.createArrayBuilder();
         JsonArrayBuilder arregloProvincias = Json.createArrayBuilder();
         JsonObjectBuilder objetoJson;
-        for (Pais item : lstPaises) {
-            for (Provincia provincias : item.getProvinciaCollection()) {
+        nuevaLista.stream().forEach((p) -> {
+            p.getProvinciaCollection().stream().forEach((a) -> {
                 arregloProvincias.add(Json.createObjectBuilder()
-                        .add("id", provincias.getProvinciaId())
-                        .add("Nombre", provincias.getProvinciaNombre())
-                        .add("abreviatura", provincias.getProvinciaAbreviatura())
-                        .add("latitud", provincias.getProvinciaLatitud())
-                        .add("longitud", provincias.getProvinciaLongitud()));
-            }
+                        .add("id", a.getProvinciaId())
+                        .add("Nombre", a.getProvinciaNombre())
+                        .add("abreviatura", a.getProvinciaAbreviatura())
+                        .add("latitud", a.getProvinciaLatitud())
+                        .add("longitud", a.getProvinciaLongitud()));
+            });
             arregloPaises.add(Json.createObjectBuilder()
-                    .add("Id", item.getPaisId())
-                    .add("nombreLargo", item.getPaisNombreLargo())
-                    .add("nombreCorto", item.getPaisNombreCorto())
-                    .add("abreviatura", item.getPaisAbreviatura())
-                    .add("capital", item.getPaisCapital())
-                    .add("poblacion", item.getPaisPoblacion())
-                    .add("bandera", "resources/banderas/" + item.getBandera())
+                    .add("Id", p.getPaisId())
+                    .add("nombreLargo", p.getPaisNombreLargo())
+                    .add("nombreCorto", p.getPaisNombreCorto())
+                    .add("abreviatura", p.getPaisAbreviatura())
+                    .add("capital", p.getPaisCapital())
+                    .add("poblacion", p.getPaisPoblacion())
+                    .add("bandera", "resources/banderas/" + p.getBandera())
                     .add("continente", Json.createObjectBuilder()
-                            .add("id", item.getContinenteId().getContinenteId())
-                            .add("nombre", item.getContinenteId().getContinenteNombre()))
+                            .add("id", p.getContinenteId().getContinenteId())
+                            .add("nombre", p.getContinenteId().getContinenteNombre()))
                     .add("provincias", arregloProvincias));
-        }
-        objetoJson = Json.createObjectBuilder().add("status", 200).add("total", total).add("paises", arregloPaises);
+        });
+
+        objetoJson = Json.createObjectBuilder().add("status", 200).add("total", totalPaises).add("paises", arregloPaises);
         return Response.ok(objetoJson.build()).build();
     }
 

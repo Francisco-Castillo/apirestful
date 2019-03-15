@@ -85,7 +85,7 @@ public class ProvinciaResourceService implements Operaciones {
                             .add("nombre", provincia.getPaisId().getPaisNombreLargo()));
         return Response.status(Response.Status.OK).entity(job.build()).build();
     }
-
+    /*
     @Override
     @GET
     @Path("/GetLista")
@@ -116,13 +116,18 @@ public class ProvinciaResourceService implements Operaciones {
         objetoJson = Json.createObjectBuilder().add("provincias", arregloProvincias);
 
         return Response.status(Response.Status.OK).entity(objetoJson.build()).build();
-    }
+    }*/
 
     @Override
     @GET
     @Path("/GetFormData")
     public Response getFormData() {
         return Response.ok().build();
+    }
+
+    @Override
+    public Response obtenerTodos(int idContinente, int sort, String search, int order, Integer offset, Integer limit) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
