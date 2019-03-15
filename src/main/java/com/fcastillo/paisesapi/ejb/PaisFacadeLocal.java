@@ -34,8 +34,4 @@ public interface PaisFacadeLocal {
 
     List<Pais> findByNameLike(String nombre);
 
-    List<Pais> findByContinente(int idContinente);
-
-    Long cantidadTotalDePaises();
-
 }

@@ -57,46 +57,17 @@ public class PaisFacade extends AbstractFacade<Pais> implements PaisFacadeLocal 
     public List<Pais> findByNameLike(String nombre) {
         nombre = nombre.trim();
         StringTokenizer st = new StringTokenizer(nombre);
-        String texto = "";
-        while (st.hasMoreTokens()) {
+        String texto="";
+        while(st.hasMoreTokens()){
             if (!texto.equals("")) {
-                texto += "%";
+                  texto+="%";
             }
-            texto += " " + st.nextToken();
+            texto += " "+st.nextToken();
         }
-        nombre = "%" + texto.trim() + "%";
+        nombre = "%" +texto.trim() + "%";
         Query query = em.createQuery("SELECT a FROM Pais a WHERE CONCAT (lower(a.paisNombreLargo),' ',lower(a.paisNombreCorto)) like ?1");
         query.setParameter(1, nombre);
         return query.getResultList();
-    }
-
-    @Override
-    public List<Pais> findByContinente(int idContinente) {
-        String consulta;
-        List<Pais> listaPaises = null;
-        try {
-            consulta = "FROM Pais p WHERE p.continenteId.continenteId=?1";
-            Query q = em.createQuery(consulta);
-            q.setParameter(1, idContinente);
-            listaPaises = q.getResultList();
-        } catch (Exception e) {
-            throw e;
-        }
-        return listaPaises;
-    }
-
-    @Override
-    public Long cantidadTotalDePaises() {
-        String consulta;
-        Long cantidad;
-        try {
-            consulta = "SELECT COUNT(p) FROM Pais p";
-            Query query = em.createQuery(consulta);
-            cantidad = (Long) query.getSingleResult();
-        } catch (Exception e) {
-            throw e;
-        }
-        return cantidad;
     }
 
 }

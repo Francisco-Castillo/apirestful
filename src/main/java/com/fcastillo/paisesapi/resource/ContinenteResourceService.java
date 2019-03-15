@@ -71,7 +71,7 @@ public class ContinenteResourceService implements Operaciones {
                 .add("nombre", continente.getContinenteNombre()));
         return Response.status(Response.Status.OK).entity(job.build()).build();
     }
-/*
+
     @Override
     @GET
     @Path("/GetLista")
@@ -96,16 +96,11 @@ public class ContinenteResourceService implements Operaciones {
         }
         job = Json.createObjectBuilder().add("continente", arregloContinente);
         return Response.status(Response.Status.OK).entity(job.build()).build();
-    }*/
+    }
 
     @Override
     public Response getFormData() {
         return Response.ok().build();
-    }
-
-    @Override
-    public Response obtenerTodos(int idContinente, int sort, String search, int order, Integer offset, Integer limit) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

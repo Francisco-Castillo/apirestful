@@ -58,8 +58,9 @@ public interface Operaciones {
         @ApiResponse(code = 404, message = "Recurso no encontrado"),
         @ApiResponse(code = 500, message = "Ocurrió un error en el servidor")
     })
-    public Response obtenerTodos(int idContinente ,int sort, String search, int order, Integer offset, Integer limit);
+    public Response obtenerTodos(Integer offset, Integer limit, String search, int sort, int order);
 
+    
     public Response getFormData();
 
 }
