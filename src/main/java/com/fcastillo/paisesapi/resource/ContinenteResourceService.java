@@ -7,6 +7,8 @@ package com.fcastillo.paisesapi.resource;
 
 import com.fcastillo.paisesapi.Continente;
 import com.fcastillo.paisesapi.ejb.ContinenteFacadeLocal;
+import com.fcastillo.paisesapi.exception.ErrorMessage;
+import com.fcastillo.paisesapi.exception.NotFoundException;
 import com.fcastillo.paisesapi.interfaces.Operaciones;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -64,7 +66,8 @@ public class ContinenteResourceService implements Operaciones {
     public Response obtener(@ApiParam(value = "id") @PathParam("id") int codigo) {
         continente = continenteEJB.find(codigo);
         if (continente == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            ErrorMessage errorMessage = new ErrorMessage("404", "Continente no encontrado", "http://localhost:8080/errores/404.xhtml", Response.Status.NOT_FOUND);
+            throw new NotFoundException(errorMessage);
         }
         JsonObjectBuilder job = Json.createObjectBuilder().add("continente", Json.createObjectBuilder()
                 .add("id", continente.getContinenteId())
@@ -87,7 +90,8 @@ public class ContinenteResourceService implements Operaciones {
         JsonArrayBuilder arregloContinente = Json.createArrayBuilder();
         JsonObjectBuilder job;
         if (lstContinente == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            ErrorMessage errorMessage = new ErrorMessage("404", "Continentes no encontrados", "http://localhost:8080/errores/404.xhtml", Response.Status.NOT_FOUND);
+            throw new NotFoundException(errorMessage);
         }
         for (Continente item : lstContinente) {
             arregloContinente.add(Json.createObjectBuilder()

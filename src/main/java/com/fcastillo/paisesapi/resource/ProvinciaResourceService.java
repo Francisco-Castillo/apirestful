@@ -1,12 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.fcastillo.paisesapi.resource;
 
 import com.fcastillo.paisesapi.Provincia;
 import com.fcastillo.paisesapi.ejb.ProvinciaFacadeLocal;
+import com.fcastillo.paisesapi.exception.ErrorMessage;
+import com.fcastillo.paisesapi.exception.NotFoundException;
 import com.fcastillo.paisesapi.interfaces.Operaciones;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -72,7 +70,8 @@ public class ProvinciaResourceService implements Operaciones {
     public Response obtener(@ApiParam(value = "codigo") @PathParam("id") int codigo) {
         provincia = provinciaEJB.find(codigo);
         if (provincia == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            ErrorMessage errorMessage = new ErrorMessage("404", "Provincia no encontrada", "http://localhost:8080/errores/404.xhtml", Response.Status.NOT_FOUND);
+            throw new NotFoundException(errorMessage);
         }
         JsonObjectBuilder job = Json.createObjectBuilder().add("provincia",Json.createObjectBuilder()
                 .add("id", provincia.getProvinciaId())
@@ -99,9 +98,12 @@ public class ProvinciaResourceService implements Operaciones {
         lstProvincia = provinciaEJB.findAll();
         JsonArrayBuilder arregloProvincias = Json.createArrayBuilder();
         JsonObjectBuilder objetoJson;
+        
         if (lstProvincia.isEmpty()) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            ErrorMessage errorMessage = new ErrorMessage("404", "Provincias no encontradas", "http://localhost:8080/errores/404.xhtml", Response.Status.NOT_FOUND);
+            throw new NotFoundException(errorMessage);
         }
+        
         for (Provincia item : lstProvincia) {
             arregloProvincias.add(Json.createObjectBuilder()
                     .add("id", item.getProvinciaId())

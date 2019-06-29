@@ -6,6 +6,8 @@ import com.fcastillo.paisesapi.Provincia;
 import com.fcastillo.paisesapi.criterios.ComparatorNombrePais;
 import com.fcastillo.paisesapi.criterios.ComparatorPoblacion;
 import com.fcastillo.paisesapi.ejb.PaisFacadeLocal;
+import com.fcastillo.paisesapi.exception.ErrorMessage;
+import com.fcastillo.paisesapi.exception.NotFoundException;
 import com.fcastillo.paisesapi.utilidades.Respuesta;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,21 +46,21 @@ import com.fcastillo.paisesapi.interfaces.Operaciones;
 @Api(value = "/Pais")
 @Produces(MediaType.APPLICATION_JSON)
 public class PaisResourceService implements Operaciones {
-    
+
     //<editor-fold defaultstate="collapsed" desc="fields">
     private static final int NOMBRE_OFICIAL = 1;
     private static final int NOMBRE_CORTO = 2;
     private static final int CANTIDAD_DE_HABITANTES = 3;
-    
-    private static final int ORDEN_ASCENDENTE=4;
-    private static final int ORDEN_DESCENTE=5;
+
+    private static final int ORDEN_ASCENDENTE = 4;
+    private static final int ORDEN_DESCENTE = 5;
     private Pais pais;
     private List<Pais> lstPaises = new ArrayList<>();
     @EJB
     PaisFacadeLocal paisEJB;
     JsonObject paisJson;
     //</editor-fold>
-    
+
     @Override
     @POST
     @Path("/Crear")
@@ -87,12 +89,12 @@ public class PaisResourceService implements Operaciones {
     public Response eliminar(@ApiParam(value = "Codigo de pais") @PathParam("id") int p) {
 
         pais = paisEJB.find(p);
+        
         if (pais == null) {
-            Respuesta r = new Respuesta();
-            r.setCodigoDeEstado(0);
-            r.setMensaje("No se encontro el pais con ID: " + p);
-            return Response.status(Response.Status.NOT_FOUND).entity(r).build();
+            ErrorMessage errorMessage = new ErrorMessage("404", "Pais no encontrado", "http://localhost:8080/errores/404.xhtml", Response.Status.NOT_FOUND);
+            throw new NotFoundException(errorMessage);
         }
+        
         Respuesta r = new Respuesta();
         r.setCodigoDeEstado(200);
         r.setMensaje("Removido exitosamente");
@@ -132,11 +134,11 @@ public class PaisResourceService implements Operaciones {
                 Collections.sort(lstPaises, new ComparatorNombrePais());
                 break;
             case CANTIDAD_DE_HABITANTES:
-                Collections.sort(lstPaises, new ComparatorPoblacion ());
+                Collections.sort(lstPaises, new ComparatorPoblacion());
                 break;
             default:
         }
-        switch(order){
+        switch (order) {
             case ORDEN_ASCENDENTE:
                 break;
             case ORDEN_DESCENTE:
@@ -177,9 +179,11 @@ public class PaisResourceService implements Operaciones {
     @Path("/GetPais/{Id}")
     @ApiOperation(value = "Permite obtener un pais", notes = "Para obtener un pais debe ingresar su código (Id)")
     public Response obtener(@ApiParam(value = "Codigo de pais") @QueryParam("Id") int codigo) {
+
         pais = paisEJB.find(codigo);
         if (pais == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            ErrorMessage errorMessage = new ErrorMessage("404", "Pais no encontrado", "http://localhost:8080/errores/404.xhtml", Response.Status.NOT_FOUND);
+            throw new NotFoundException(errorMessage);
         }
         paisJson = Json.createObjectBuilder()
                 .add("codigo", pais.getPaisId())
