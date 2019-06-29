@@ -1,5 +1,6 @@
 package com.fcastillo.paisesapi.resource;
 
+//<editor-fold defaultstate="collapsed" desc="imports">
 import com.fcastillo.paisesapi.Pais;
 import com.fcastillo.paisesapi.Provincia;
 import com.fcastillo.paisesapi.criterios.ComparatorNombrePais;
@@ -37,12 +38,14 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import com.fcastillo.paisesapi.interfaces.Operaciones;
+//</editor-fold>
 
 @Path("/Pais")
 @Api(value = "/Pais")
 @Produces(MediaType.APPLICATION_JSON)
 public class PaisResourceService implements Operaciones {
-
+    
+    //<editor-fold defaultstate="collapsed" desc="fields">
     private static final int NOMBRE_OFICIAL = 1;
     private static final int NOMBRE_CORTO = 2;
     private static final int CANTIDAD_DE_HABITANTES = 3;
@@ -54,7 +57,8 @@ public class PaisResourceService implements Operaciones {
     @EJB
     PaisFacadeLocal paisEJB;
     JsonObject paisJson;
-
+    //</editor-fold>
+    
     @Override
     @POST
     @Path("/Crear")
