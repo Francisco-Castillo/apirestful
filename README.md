@@ -3,7 +3,7 @@
 
 ## Empezando
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+Servicio web restful creado con JAXRS
 
 ### Prerequisites
 
@@ -13,14 +13,38 @@ What things you need to install the software and how to install them
 Give examples
 ```
 
-### Configuracion de Payara Server
+### Configuración de Payara Server
 
-A step by step series of examples that tell you how to get a development env running
+Una vez que haya restaurado los scripts de MariaDB, es necesario crear en el servidor los recursos que le permitiran a la aplicacion conectarse con la base de datos. Ellos son :
 
-Say what the step will be
+* **JDBC Connection Pool**
+  * 1 - New...
+  * 2 - Pool Name :     *apipruebaPool*
+  * 3 - Resource Type : *java.sql.Driver*
+  * 4 - Click en Next
+  * 5 - Driver Classname:  *org.mariadb.jdbc.Driver*
+  * 6 - Additional Properties (Add Properties):
+    * 6.1 - serverName : *localhost*
+    * 6.2 - databaseName : *paisesDB*
+    * 6.3 - URL : *jdbc:mariadb://localhost:3306/saed_web*
+    * 6.4 - user: *nombreDeUsuario*
+    * 6.5 - password: *password*
+    
+Una vez finalizada la creación del pool de conexiones, se debe realizar un "ping" para comprobar que el proceso se haya realizado de manera exitosa.
+
+Para ello haga clic en el botón con la leyenda "Ping" que se encuentra dentro de la pestaña general 
+
+    
+* **JDBC Resources**
+  * 1 - New...
+  * 2 - JNDI Name :     *jdbc/paisesdb*
+  * 3 - Pool Name : *apipruebapool*
+  * 4 - Click en OK
+
+
 
 ```
-Give the example
+
 ```
 
 And repeat
@@ -31,9 +55,19 @@ until finished
 
 End with an example of getting some data out of the system or using it for a little demo
 
-## Despliegue
+## Desplegar *.war* en Payara Server
 
-Para desplegar la aplicación
+Para desplegar la aplicación realizar los siguientes pasos
+* 1 - Levantar Payara Server con el comando asadmin.
+
+```
+./asadmin start-domain
+```
+* 2 - Realizar el deploy
+
+```
+./asadmin deploy /ruta/aplicacion/target/paises.war
+```
 
 ## Built With
 
