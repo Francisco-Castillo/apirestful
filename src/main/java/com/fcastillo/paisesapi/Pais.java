@@ -40,7 +40,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Pais.findByPaisAbreviatura", query = "SELECT p FROM Pais p WHERE p.paisAbreviatura = :paisAbreviatura"),
     @NamedQuery(name = "Pais.findByPaisCapital", query = "SELECT p FROM Pais p WHERE p.paisCapital = :paisCapital"),
     @NamedQuery(name = "Pais.findByPaisPoblacion", query = "SELECT p FROM Pais p WHERE p.paisPoblacion = :paisPoblacion"),
-    @NamedQuery(name = "Pais.findByBandera", query = "SELECT p FROM Pais p WHERE p.bandera = :bandera")})
+    @NamedQuery(name = "Pais.findByBandera", query = "SELECT p FROM Pais p WHERE p.bandera = :bandera"),
+    @NamedQuery(name = "Pais.findByResenia", query = "SELECT p FROM Pais p WHERE p.resenia = :resenia")})
 public class Pais implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -70,6 +71,9 @@ public class Pais implements Serializable {
     @Size(max = 40)
     @Column(name = "bandera")
     private String bandera;
+    @Size(max = 400)
+    @Column(name = "resenia")
+    private String resenia;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "paisId")
     private Collection<Provincia> provinciaCollection;
     @JoinColumn(name = "continente_id", referencedColumnName = "continente_id")
@@ -143,6 +147,14 @@ public class Pais implements Serializable {
 
     public void setBandera(String bandera) {
         this.bandera = bandera;
+    }
+
+    public String getResenia() {
+        return resenia;
+    }
+
+    public void setResenia(String resenia) {
+        this.resenia = resenia;
     }
 
     @XmlTransient
