@@ -43,7 +43,6 @@ public class Continente implements Serializable {
     @Column(name = "continente_id")
     private Integer continenteId;
     @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 45)
     @Column(name = "continente_nombre")
     private String continenteNombre;
@@ -55,6 +54,10 @@ public class Continente implements Serializable {
 
     public Continente(Integer continenteId) {
         this.continenteId = continenteId;
+    }
+
+    public Continente(String continenteNombre) {
+        this.continenteNombre = continenteNombre;
     }
 
     public Continente(Integer continenteId, String continenteNombre) {
@@ -111,5 +114,5 @@ public class Continente implements Serializable {
     public String toString() {
         return "com.fcastillo.paisesapi.Continente[ continenteId=" + continenteId + " ]";
     }
-    
+
 }
