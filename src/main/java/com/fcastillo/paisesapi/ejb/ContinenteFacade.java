@@ -11,6 +11,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -33,7 +34,7 @@ public class ContinenteFacade extends AbstractFacade<Continente> implements Cont
 
     @Override
     public List<Continente> findByParameters(Integer offset, Integer limit) {
-       String consulta;
+        String consulta;
         List<Continente> lstContinente = null;
         try {
             consulta = "FROM Continente p";
@@ -51,5 +52,21 @@ public class ContinenteFacade extends AbstractFacade<Continente> implements Cont
         }
         return lstContinente;
     }
-    
+
+    @Override
+    public boolean exists(int idContinente) {
+        boolean existe = false;
+        String consulta;
+        try {
+            consulta = "FROM Continente c WHERE c.continenteId = ?1";
+            TypedQuery<Continente> q = em.createQuery(consulta, Continente.class);
+            q.setParameter(1, idContinente);
+            if (q.getSingleResult() != null) {
+                existe = true;
+            }
+        } catch (Exception e) {
+        }
+        return existe;
+    }
+
 }
