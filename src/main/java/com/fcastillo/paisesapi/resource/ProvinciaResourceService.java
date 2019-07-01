@@ -1,130 +1,157 @@
-
 package com.fcastillo.paisesapi.resource;
 
+//<editor-fold defaultstate="collapsed" desc="imports">
+import com.fcastillo.paisesapi.Pais;
 import com.fcastillo.paisesapi.Provincia;
+import com.fcastillo.paisesapi.apimodel.ProvinciaFormModel;
 import com.fcastillo.paisesapi.ejb.ProvinciaFacadeLocal;
 import com.fcastillo.paisesapi.exception.ErrorMessage;
 import com.fcastillo.paisesapi.exception.NotFoundException;
-import com.fcastillo.paisesapi.interfaces.Operaciones;
+import com.fcastillo.paisesapi.interfaces.OperacionesProvincia;
+import com.fcastillo.paisesapi.interfaces.Pagination;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
-import javax.persistence.Query;
-import javax.transaction.Status;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+//</editor-fold>
 
 @Path("/Provincia")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Provincia")
-public class ProvinciaResourceService implements Operaciones {
+public class ProvinciaResourceService implements OperacionesProvincia, Pagination {
 
+    //<editor-fold defaultstate="collapsed" desc="fields">
     @EJB
     ProvinciaFacadeLocal provinciaEJB;
-    private List<Provincia> lstProvincia;
-    private Provincia provincia;
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="crear()">
     @Override
-    public Response crear(String nombreLargo, String nombreCorto) {
-        return Response.ok().build();
-    }
+    @POST
+    @Path("Crear")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Añadir Provincia")
+    public Response crear(@ApiParam(value = "provincia") ProvinciaFormModel provincia) {
 
+        Provincia prv = new Provincia();
+        Pais pais = new Pais();
+
+        pais.setPaisId(provincia.getIdPais());
+        prv.setProvinciaNombre(provincia.getNombre());
+        prv.setProvinciaAbreviatura(provincia.getAbreviatura());
+        prv.setProvinciaLatitud(provincia.getLatitud());
+        prv.setProvinciaLongitud(provincia.getLongitud());
+        prv.setPaisId(pais);
+
+        return Response.status(Response.Status.CREATED).build();
+    }//</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="cambiar()">
     @Override
-    @PUT
-    @Path("/Cambiar")
-    public Response actualizar() {
-        return Response.ok().build();
-    }
+    @POST
+    @Path("Cambiar")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Actualizar información de una provincia")
+    public Response cambiar(@ApiParam(value = "provincia", name = "form") ProvinciaFormModel form) {
+        Provincia provActual = provinciaEJB.find(form.getIdProvincia());
+        Pais pais = new Pais();
 
+        if (provActual == null) {
+            ErrorMessage errorMessage = new ErrorMessage("404", "Provincia no encontrada", "", Response.Status.NOT_FOUND);
+            throw new NotFoundException(errorMessage);
+        }
+        pais.setPaisId(form.getIdPais());
+        provActual.setProvinciaNombre(form.getNombre());
+        provActual.setProvinciaAbreviatura(form.getAbreviatura());
+        provActual.setProvinciaLatitud(form.getLatitud());
+        form.setLongitud(form.getLongitud());
+        provActual.setPaisId(pais);
+
+        provinciaEJB.edit(provActual);
+
+        return Response.status(Response.Status.OK).build();
+    }//</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="eliminar()">
     @Override
     @DELETE
-    @Path("/Eliminar")
-    public Response eliminar(@ApiParam(value = "Codigo") @QueryParam("codigo") int codigo) {
-        return Response.ok().build();
-    }
+    @Path("Eliminar/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Eliminar una provincia")
+    public Response eliminar(@ApiParam(value = "Id Provincia", name = "id") @PathParam("id") int idProvincia) {
+        Provincia prv = provinciaEJB.find(idProvincia);
 
-    @Override
-    @GET
-    @Path("/Get/{id}")
-    public Response obtener(@ApiParam(value = "codigo") @PathParam("id") int codigo) {
-        provincia = provinciaEJB.find(codigo);
-        if (provincia == null) {
-            ErrorMessage errorMessage = new ErrorMessage("404", "Provincia no encontrada", "http://localhost:8080/errores/404.xhtml", Response.Status.NOT_FOUND);
+        if (prv == null) {
+            ErrorMessage errorMessage = new ErrorMessage("404", "Provincia no encontrada", "", Response.Status.NOT_FOUND);
             throw new NotFoundException(errorMessage);
         }
-        JsonObjectBuilder job = Json.createObjectBuilder().add("provincia",Json.createObjectBuilder()
-                .add("id", provincia.getProvinciaId())
+
+        provinciaEJB.remove(prv);
+        return Response.status(Response.Status.OK).build();
+    }//</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="obtener()">
+    @Override
+    @GET
+    @Path("Get")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Buscar provincia por su Id")
+    public Response obtener(@ApiParam(value = "id provincia", name = "idprovincia") @QueryParam("idprovincia") int idProvincia) {
+        Provincia provincia = provinciaEJB.find(idProvincia);
+
+        if (provincia == null) {
+            ErrorMessage errorMessage = new ErrorMessage("404", "Provincia no encontrada", "", Response.Status.NOT_FOUND);
+            throw new NotFoundException(errorMessage);
+        }
+        JsonObjectBuilder job = Json.createObjectBuilder();
+        job.add("id", provincia.getProvinciaId())
                 .add("nombre", provincia.getProvinciaNombre())
                 .add("abreviatura", provincia.getProvinciaAbreviatura())
-                .add("latitud", provincia.getProvinciaLatitud())
-                .add("longitud", provincia.getProvinciaLongitud()))
-                    .add("pais", Json.createObjectBuilder()
-                        .add("id", provincia.getPaisId().getPaisId())
-                            .add("nombre", provincia.getPaisId().getPaisNombreLargo()));
+                .add("ubicacion", Json.createObjectBuilder()
+                        .add("latitud", provincia.getProvinciaLatitud())
+                        .add("longitud", provincia.getProvinciaLongitud()));
+
         return Response.status(Response.Status.OK).entity(job.build()).build();
-    }
+    }//</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="getList()">
     @Override
     @GET
-    @Path("/GetLista")
-    public Response obtenerTodos(
-            @ApiParam(value = "offset") @QueryParam("offset") Integer offset,
-            @ApiParam(value = "limit") @QueryParam("limit") Integer limit,
-            @ApiParam(value = "search") @QueryParam("search") String search,
-            @ApiParam(value = "sort") @QueryParam("sort") int sort,
-            @ApiParam(value = "order") @QueryParam("order") int order
-    ) {
-        lstProvincia = provinciaEJB.findAll();
-        JsonArrayBuilder arregloProvincias = Json.createArrayBuilder();
-        JsonObjectBuilder objetoJson;
-        
-        if (lstProvincia.isEmpty()) {
-            ErrorMessage errorMessage = new ErrorMessage("404", "Provincias no encontradas", "http://localhost:8080/errores/404.xhtml", Response.Status.NOT_FOUND);
-            throw new NotFoundException(errorMessage);
+    @Path("GetLista/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Retorna una lista de provincias", notes = "Permite paginar y filtrar")
+    public Response getList(
+            @ApiParam(name = "id") @QueryParam("id") int id,
+            @ApiParam(name = "limit") @QueryParam("limit") @DefaultValue("10") int limit,
+            @ApiParam(name = "offset") @QueryParam("offset") @DefaultValue("1") int offset,
+            @ApiParam(name = "search") @QueryParam("search") String search) {
+        List<Provincia> lstProvincia = provinciaEJB.getList(id, limit, offset, search);
+        JsonArrayBuilder arrProvincias = Json.createArrayBuilder();
+        for (Provincia p : lstProvincia) {
+            arrProvincias.add(Json.createObjectBuilder()
+                    .add("nombre", p.getProvinciaNombre()));
         }
-        
-        for (Provincia item : lstProvincia) {
-            arregloProvincias.add(Json.createObjectBuilder()
-                    .add("id", item.getProvinciaId())
-                    .add("nombre", item.getProvinciaNombre())
-                    .add("abreviatura", item.getProvinciaAbreviatura())
-                    .add("latitud", item.getProvinciaLatitud())
-                    .add("longitud", item.getProvinciaLongitud())
-                    .add("pais", Json.createObjectBuilder()
-                            .add("id", item.getPaisId().getPaisId())
-                            .add("nombrePais", item.getPaisId().getPaisNombreLargo())));
-        }
-        objetoJson = Json.createObjectBuilder().add("provincias", arregloProvincias);
-
-        return Response.status(Response.Status.OK).entity(objetoJson.build()).build();
-    }
-
-    @Override
-    @GET
-    @Path("/GetFormData")
-    public Response getFormData() {
-        return Response.ok().build();
-    }
+        return Response.status(Response.Status.OK).entity(arrProvincias.build()).build();
+    }//</editor-fold>
 
 }
