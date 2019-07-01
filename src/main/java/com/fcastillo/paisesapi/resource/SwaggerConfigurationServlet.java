@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.fcastillo.paisesapi.resource;
 
 import io.swagger.jaxrs.config.BeanConfig;
@@ -15,6 +11,8 @@ import javax.servlet.http.HttpServlet;
 /**
  *
  * @author fcastillo
+ * @since 30 de Junio de 2019
+ * @version 2.0
  */
 @WebServlet(name = "SwaggerConfigurationServlet", loadOnStartup = 2)
 public class SwaggerConfigurationServlet extends HttpServlet {
@@ -30,8 +28,8 @@ public class SwaggerConfigurationServlet extends HttpServlet {
       
         beanConfig.setBasePath("paisesAPI/api");
         beanConfig.setHost("localhost:8080");
-        beanConfig.setTitle("Paises API");
-        beanConfig.setDescription("Documentacion de RESTful API con Swagger");
+        beanConfig.setTitle("API RESTful con JAX-RS");
+        beanConfig.setDescription("API desarrollada con propositos educativos para el taller de Interoperabilidad con Servcios Web | FCEyT - UNSE");
         beanConfig.setContact("cefrancastillo@gmail.com");
         beanConfig.setVersion("1.0.0");
         beanConfig.setResourcePackage("com.fcastillo.paisesapi.resource");
