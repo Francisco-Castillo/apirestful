@@ -1,61 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
-    <filter>
-        <filter-name>ApiOrigin</filter-name>
-        <filter-class>com.fcastillo.paisesapi.filter.ApiOriginFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>ApiOrigin</filter-name>
-        <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
-    </filter-mapping>
-    <servlet>
-        <servlet-name>jersey</servlet-name>
-        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-        <init-param>
-            <param-name>jersey.config.server.provider.packages</param-name>
-            <param-value>
-                io.swagger.jaxrs.listing,
-                com.fcastillo.paisesapi.resource,
-                com.fcastillo.paisesapi.filter
-            </param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>jersey</servlet-name>
-        <url-pattern>/api/*</url-pattern>
-    </servlet-mapping>
-    <!--Servlet para iniciar Swagger-->
-    <servlet>
-        <servlet-name>SwaggerConfigurationServlet</servlet-name>
-        <servlet-class>com.fcastillo.paisesapi.resource.SwaggerConfigurationServlet</servlet-class>
-        <load-on-startup>2</load-on-startup>
-    </servlet>
-    <!--
-    <filter>
-        <filter-name>CORS Filter</filter-name>
-        <filter-class>org.ebaysf.web.cors.CORSFilter</filter-class>
-        <init-param>
-            <description>A comma separated list of allowed origins. Note: An '*' cannot be used for an allowed origin when using credentials.</description>
-            <param-name>cors.allowed.origins</param-name>
-            <param-value>http://localhost:9090/</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>CORS Filter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>-->
-    <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
-    </welcome-file-list>
+  <filter>
+    <filter-name>ApiOrigin</filter-name>
+    <filter-class>com.fcastillo.paisesapi.filter.ApiOriginFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>ApiOrigin</filter-name>
+    <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+  </filter-mapping>
+  
+  <servlet>
+    <servlet-name>jersey</servlet-name>
+    <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+    <init-param>
+      <param-name>jersey.config.server.provider.packages</param-name>
+      <param-value>
+        io.swagger.jaxrs.listing,
+        com.fcastillo.paisesapi.resource,
+        com.fcastillo.paisesapi.filter,
+        com.fcastillo.paisesapi.apimodel.*,
+        com.fcastillo.paisesapi.interfaces
+      </param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>jersey</servlet-name>
+    <url-pattern>/api/*</url-pattern>
+  </servlet-mapping>
+  
+  <!--Servlet para iniciar Swagger-->
+  <servlet>
+    <servlet-name>SwaggerConfigurationServlet</servlet-name>
+    <servlet-class>com.fcastillo.paisesapi.resource.SwaggerConfigurationServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+  
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
  
-    <filter>
-        <filter-name>CorsFilter</filter-name>
-        <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>CorsFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
 </web-app>
