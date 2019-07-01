@@ -1,12 +1,12 @@
-
 package com.fcastillo.paisesapi.resource;
 
+//<editor-fold defaultstate="collapsed" desc="imports">
 import io.swagger.jaxrs.config.BeanConfig;
-import io.swagger.models.Info;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
+//</editor-fold>
 
 /**
  *
@@ -17,15 +17,17 @@ import javax.servlet.http.HttpServlet;
 @WebServlet(name = "SwaggerConfigurationServlet", loadOnStartup = 2)
 public class SwaggerConfigurationServlet extends HttpServlet {
 
+    //<editor-fold defaultstate="collapsed" desc="fields">
     private static final long serialVersionUID = 1L;
+    //</editor-fold>
 
-  
+    //<editor-fold defaultstate="collapsed" desc="init()">
     @Override
     public void init(ServletConfig config) throws ServletException {
 
         super.init(config);
         BeanConfig beanConfig = new BeanConfig();
-      
+
         beanConfig.setBasePath("paisesAPI/api");
         beanConfig.setHost("localhost:8080");
         beanConfig.setTitle("API RESTful con JAX-RS");
@@ -36,9 +38,5 @@ public class SwaggerConfigurationServlet extends HttpServlet {
         beanConfig.setPrettyPrint(true);
         beanConfig.setScan(true);
         beanConfig.setSchemes(new String[]{"http"});
-       
-        
-
-    }
-
+    }//</editor-fold>
 }
