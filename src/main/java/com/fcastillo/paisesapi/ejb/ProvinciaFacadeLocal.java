@@ -29,5 +29,7 @@ public interface ProvinciaFacadeLocal {
     List<Provincia> findRange(int[] range);
 
     int count();
-    
+
+    public List<Provincia> getList(int id, int limit, int offset, String search);
+
 }
