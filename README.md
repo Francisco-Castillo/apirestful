@@ -1,5 +1,5 @@
 # API RESTful con JAX-RS
-
+[![Build Status](https://travis-ci.org/Francisco-Castillo/apirestful.svg?branch=master)](https://travis-ci.org/Francisco-Castillo/apirestful)
 ### Requisitos previos
 
 Es necesario contar con el siguiente software instalado en la pc.
