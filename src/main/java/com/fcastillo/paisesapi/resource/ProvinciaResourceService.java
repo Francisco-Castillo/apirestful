@@ -60,7 +60,7 @@ public class ProvinciaResourceService implements OperacionesProvincia, Paginatio
         prv.setProvinciaLatitud(provincia.getLatitud());
         prv.setProvinciaLongitud(provincia.getLongitud());
         prv.setPaisId(pais);
-
+        provinciaEJB.create(prv);
         return Response.status(Response.Status.CREATED).build();
     }//</editor-fold>
 
